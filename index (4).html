@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gesuche – Balken</title>
+<style>
+/* GRF web fonts - zentral im Repository grf-fonts (GitHub Pages) */
+@font-face {
+  font-family: "CircularGraubuendenWeb";
+  src: url("https://graubuendenferien-sudo.github.io/grf-fonts/CirculargraubuendenWeb-Book.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "CircularGraubuendenWeb";
+  src: url("https://graubuendenferien-sudo.github.io/grf-fonts/CirculargraubuendenWeb-Bold.woff2") format("woff2");
+  font-weight: 600 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "TheMix";
+  src: url("https://graubuendenferien-sudo.github.io/grf-fonts/TheMix_500_.woff2") format("woff2");
+  font-weight: 400 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "TheMix";
+  src: url("https://graubuendenferien-sudo.github.io/grf-fonts/TheMix_700_.woff2") format("woff2");
+  font-weight: 600 700; font-style: normal; font-display: swap;
+}
+
+:root{
+  /* GRF Evolution Styleguide – Granit-Familie */
+  --granit:#79775F; --granit-75:#A19E8C; --granit-50:#C0BFB2; --granit-25:#E0DFD9;
+  --granit-10:#F2F2F0; --granit-5:#F9F9F7; --granit-hover:#666450;
+  --grf-black:#191813; --grf-black-80:#474642;
+  --font-circular:"CircularGraubuendenWeb","Circular Std","CircularStd","DM Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --font-mix:"TheMix","TheMixOsF","TheMix Plain","Alegreya Sans","Gill Sans","Trebuchet MS",sans-serif;
+}
+html,body{margin:0;padding:0;height:auto;}
+*,*::before,*::after{box-sizing:border-box;}
+body{font-family:var(--font-circular);font-weight:400;font-size:16px;line-height:24px;color:var(--grf-black);background:#fff;-webkit-text-size-adjust:100%;}
+button,a{touch-action:manipulation;}
+:focus-visible{outline:2px solid var(--granit-hover);outline-offset:2px;}
+.wrap{padding:24px 16px 32px;max-width:760px;margin:0 auto;}
+.num{font-family:var(--font-mix);font-weight:700;font-variant-numeric:tabular-nums;margin:0;}
+.lbl{overflow-wrap:anywhere;hyphens:auto;-webkit-hyphens:auto;}
+
+/* Topline + Titel (Styleguide) */
+.page-intro{margin:0 0 24px;}
+.topline{margin:0;color:var(--grf-black);font-family:var(--font-circular);font-size:clamp(32px,9vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.24;}
+.title{margin:2px 0 0;color:var(--grf-black);font-family:var(--font-mix);font-size:clamp(30px,8vw,36px);font-weight:400;letter-spacing:0;line-height:1.25;}
+@media (min-width:761px){
+  .page-intro{margin-bottom:32px;}
+  .topline{font-size:clamp(32px,3.6vw,42px);}
+  .title{font-size:clamp(32px,3.5vw,40px);}
+}
+
+/* Karte mit Gesamtzahl, Balken und Legende */
+.card{background:var(--granit-5);border:1px solid var(--granit-25);padding:24px 20px;}
+@media (min-width:761px){.card{padding:32px;}}
+.total{display:flex;align-items:baseline;gap:12px 16px;flex-wrap:wrap;margin-bottom:20px;}
+.total .num{font-size:64px;line-height:1;}
+.total .lbl{font-size:18px;line-height:30px;}
+@media (min-width:761px){.total .num{font-size:80px;}.total .lbl{font-size:20px;line-height:32px;}}
+
+.bar{display:flex;gap:2px;height:48px;background:var(--granit-10);outline:1px solid var(--granit-25);}
+.seg{min-width:6px;transition:filter .2s;}
+
+/* Legende */
+.legend{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);}
+.legend li{display:flex;align-items:center;gap:16px;padding:16px 0;border-top:1px solid var(--granit-25);min-width:0;}
+.legend li:first-child{border-top:0;}
+.sw{width:16px;height:16px;flex:none;}
+.legend .lbl{flex:1 1 auto;min-width:0;font-size:16px;line-height:24px;}
+.legend .v{flex:none;text-align:right;}
+.legend .num{font-size:28px;line-height:32px;display:block;}
+.legend .p{display:block;font-size:15px;line-height:22px;color:var(--grf-black-80);}
+@media (min-width:761px){
+  .legend{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:48px;}
+  .legend li:nth-child(2){border-top:0;}
+}
+
+/* Eröffnungsanimation (nur ohne «reduzierte Bewegung») */
+@media (prefers-reduced-motion:no-preference){
+  .anim .page-intro{opacity:0;transform:translateY(12px);}
+  .anim .card{opacity:0;transform:translateY(16px);}
+  .anim .bar{clip-path:inset(0 100% 0 0);}
+  .anim .legend li{opacity:0;transform:translateY(12px);}
+  .go .page-intro{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;}
+  .go .card{animation:rise .7s cubic-bezier(.2,.7,.2,1) .15s forwards;}
+  .go .bar{animation:wipe 1.3s cubic-bezier(.2,.8,.2,1) .6s forwards;}
+  .go .legend li{animation:rise .55s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(.9s + var(--i) * .1s);}
+}
+@keyframes rise{to{opacity:1;transform:none;}}
+@keyframes wipe{to{clip-path:inset(0 0 0 0);}}
+</style>
+</head>
+<body>
+<div class="wrap anim" id="app" aria-live="polite"></div>
+<script>
+/* Zahlen über die URL steuern, z. B. ?gefoerdert=39&zurueckgezogen=68 */
+var DEF = {eingereicht:111, gefoerdert:38, evaluation:0, ueberarbeitung:1, kanton:3, zurueckgezogen:69};
+var TOPLINE = 'Stand der Gesuche.';
+var TITLE = 'Eingereichte und geförderte Gesuche';
+var params = new URLSearchParams(window.location.search);
+var D = {};
+Object.keys(DEF).forEach(function (k) {
+  var n = parseInt(params.get(k), 10);
+  D[k] = (isFinite(n) && n >= 0) ? n : DEF[k];
+});
+function fmt(n) { return n.toLocaleString('de-CH'); }
+function pct(n) { return D.eingereicht > 0 ? Math.round(n / D.eingereicht * 100) : 0; }
+var LABEL = {
+  eingereicht: function (n) { return n === 1 ? 'eingereichtes Gesuch' : 'eingereichte Gesuche'; },
+  gefoerdert: function (n) { return n === 1 ? 'gefördertes Gesuch' : 'geförderte Gesuche'; },
+  evaluation: function () { return 'in Evaluation'; },
+  ueberarbeitung: function () { return 'in Überarbeitung bei den Gesuchstellenden'; },
+  kanton: function () { return 'in Prüfung beim Kanton'; },
+  zurueckgezogen: function () { return 'zurückgezogen / nicht gefördert'; }
+};
+
+var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var app = document.getElementById('app');
+/* Segmentfarben: nur Granit-Töne laut Styleguide */
+var segs = [['gefoerdert','#666450'],['kanton','#A19E8C'],['ueberarbeitung','#79775F'],['evaluation','#C0BFB2'],['zurueckgezogen','#E0DFD9']];
+
+function startVal(v) { return reduce ? fmt(v) : '0'; }
+
+var html = '<header class="page-intro"><p class="topline">' + TOPLINE + '</p><h1 class="title">' + TITLE + '</h1></header>'
+  + '<div class="card"><div class="total"><div class="num" data-to="' + D.eingereicht + '">' + startVal(D.eingereicht) + '</div>'
+  + '<div class="lbl">' + LABEL.eingereicht(D.eingereicht) + '</div></div>'
+  + '<div class="bar" role="img" aria-label="Verteilung der Gesuche">';
+segs.forEach(function (s) {
+  var k = s[0];
+  if (D[k] > 0) html += '<div class="seg" style="flex:' + D[k] + ' 1 0;background:' + s[1] + '" title="' + LABEL[k](D[k]) + ': ' + D[k] + '"></div>';
+});
+html += '</div><ul class="legend">';
+segs.forEach(function (s, idx) {
+  var k = s[0];
+  html += '<li style="--i:' + idx + '"><span class="sw" style="background:' + s[1] + (s[1] === '#E0DFD9' ? ';outline:1px solid #C0BFB2;outline-offset:-1px' : '') + '"></span>'
+    + '<span class="lbl">' + LABEL[k](D[k]) + '</span><span class="v"><span class="num" data-to="' + D[k] + '">' + startVal(D[k]) + '</span>'
+    + '<span class="p">' + pct(D[k]) + ' %</span></span></li>';
+});
+app.innerHTML = html + '</ul></div>';
+
+var sum = segs.reduce(function (a, s) { return a + D[s[0]]; }, 0);
+if (window.console && sum !== D.eingereicht) console.warn('Summe der Einzelwerte (' + sum + ') weicht von eingereicht (' + D.eingereicht + ') ab.');
+
+function countUp(el, to, dur, delay) {
+  if (to === 0) { el.textContent = fmt(0); return; }
+  setTimeout(function () {
+    var s = null;
+    function step(t) {
+      if (s === null) s = t;
+      var p = Math.min(1, (t - s) / dur);
+      el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step); else el.textContent = fmt(to);
+    }
+    requestAnimationFrame(step);
+  }, delay);
+}
+
+var started = false;
+function start() {
+  if (started) return;
+  started = true;
+  if (reduce) { app.className = 'wrap'; return; }
+  app.className = 'wrap anim go';
+  var nums = app.querySelectorAll('.num');
+  Array.prototype.forEach.call(nums, function (el, i) {
+    countUp(el, parseInt(el.getAttribute('data-to'), 10), i === 0 ? 1400 : 900, i === 0 ? 450 : 900 + (i - 1) * 100);
+  });
+}
+/* Start, sobald die Schriften geladen sind (max. 700 ms warten) */
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(start);
+  setTimeout(start, 700);
+} else {
+  start();
+}
+</script>
+<script>
+/* ===== GRF Auto-Height Sender – NICHT VERÄNDERN ===== */
+(function () {
+  var lastHeight = 0, scheduled = false;
+  function getHeight() {
+    var b = document.body;
+    if (!b) return 0;
+    return Math.ceil(Math.max(b.scrollHeight, b.offsetHeight, b.getBoundingClientRect().height));
+  }
+  function send() {
+    scheduled = false;
+    var h = getHeight();
+    if (h > 0 && Math.abs(h - lastHeight) > 1) {   // nur echte Änderungen senden, kein Loop
+      lastHeight = h;
+      window.parent.postMessage({ height: h }, '*');
+    }
+  }
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    (window.requestAnimationFrame || setTimeout)(send);
+  }
+  window.addEventListener('load', schedule);
+  window.addEventListener('resize', schedule);
+  window.addEventListener('orientationchange', function () { setTimeout(schedule, 300); });
+  document.addEventListener('click', function () { setTimeout(schedule, 100); }, true);
+  if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.body);
+  if (window.MutationObserver) {
+    new MutationObserver(schedule).observe(document.body, {
+      childList: true, subtree: true, attributes: true, characterData: true
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  [100, 500, 1500].forEach(function (t) { setTimeout(schedule, t); });
+  schedule();
+})();
+</script>
+</body>
+</html>
